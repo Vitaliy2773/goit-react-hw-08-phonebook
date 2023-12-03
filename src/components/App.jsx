@@ -30,6 +30,10 @@ export default function App() {
   }, [dispatch]);
 
   const handleSubmit = (name, number) => {
+    if (!Array.isArray(contacts)) {
+      return;
+    }
+
     const contactExists = contacts.some(contact => {
       if (typeof contact.name === 'string') {
         return contact.name.toLowerCase() === name.toLowerCase();
