@@ -1,15 +1,20 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Route, Routes, Router } from 'react-router-dom';
+import Navigation from 'Layout/Layout.jsx';
 import {
   fetchContacts,
   addContact,
   deleteContact,
   setFilter,
 } from './contactsSlice/contactsSlice.jsx';
+import Loader from './Loader/Loader.jsx';
 import ContactForm from './contactForm/ContactForm.jsx';
 import Filter from './filter/Filter.jsx';
 import ContactList from './contactList/ContactList.jsx';
 import css from './Contacts.module.css';
+import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -25,9 +30,12 @@ export default function App() {
   }, [dispatch]);
 
   const handleSubmit = (name, number) => {
-    const contactExists = contacts.some(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
+    const contactExists = contacts.some(contact => {
+      if (typeof contact.name === 'string') {
+        return contact.name.toLowerCase() === name.toLowerCase();
+      }
+      return false;
+    });
 
     if (contactExists) {
       alert(`Contact with the name ${name} already exists.`);
@@ -45,9 +53,13 @@ export default function App() {
     dispatch(setFilter(event.target.value));
   };
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredContacts =
+    contacts &&
+    contacts.filter(
+      contact =>
+        typeof contact.name === 'string' &&
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
 
   return (
     <div className={css.container}>
@@ -61,6 +73,13 @@ export default function App() {
         contacts={filteredContacts}
         onDeleteItem={handleDeleteContact}
       />
+
+      <Navigation>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </Navigation>
     </div>
   );
 }
