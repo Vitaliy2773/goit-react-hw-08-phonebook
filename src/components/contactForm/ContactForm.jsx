@@ -1,26 +1,18 @@
 import React, { useState } from 'react';
-
 import css from '../Contacts.module.css';
 
 export default function ContactForm({ onSubmit }) {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [contact, setContact] = useState({ name: '', number: '' });
 
   function handleChange(e) {
     const { name, value } = e.target;
-
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'number') {
-      setNumber(value);
-    }
+    setContact(prev => ({ ...prev, [name]: value }));
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    onSubmit(name, number);
-    setName('');
-    setNumber('');
+    onSubmit(contact);
+    setContact({ name: '', number: '' });
   }
 
   return (
@@ -31,7 +23,7 @@ export default function ContactForm({ onSubmit }) {
           type="text"
           name="name"
           onChange={handleChange}
-          value={name}
+          value={contact.name}
           className={css.input}
           required
         />
@@ -42,7 +34,7 @@ export default function ContactForm({ onSubmit }) {
           type="tel"
           name="number"
           onChange={handleChange}
-          value={number}
+          value={contact.number}
           className={css.input}
           required
         />

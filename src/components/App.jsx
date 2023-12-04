@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Route, Routes, Router } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navigation from 'Layout/Layout.jsx';
 import {
   fetchContacts,
@@ -30,16 +30,11 @@ export default function App() {
   }, [dispatch]);
 
   const handleSubmit = (name, number) => {
-    if (!Array.isArray(contacts)) {
-      return;
-    }
-
-    const contactExists = contacts.some(contact => {
-      if (typeof contact.name === 'string') {
-        return contact.name.toLowerCase() === name.toLowerCase();
-      }
-      return false;
-    });
+    const contactExists = contacts.some(
+      contact =>
+        typeof contact.name === 'string' &&
+        contact.name.toLowerCase() === name.toLowerCase()
+    );
 
     if (contactExists) {
       alert(`Contact with the name ${name} already exists.`);
@@ -57,13 +52,11 @@ export default function App() {
     dispatch(setFilter(event.target.value));
   };
 
-  const filteredContacts =
-    contacts &&
-    contacts.filter(
-      contact =>
-        typeof contact.name === 'string' &&
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
+  const filteredContacts = contacts.filter(
+    contact =>
+      typeof contact.name === 'string' &&
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <div className={css.container}>
@@ -71,19 +64,24 @@ export default function App() {
       <ContactForm onSubmit={handleSubmit} />
       <h2 className={css.title}>Contacts</h2>
       <Filter value={filter} onChange={changeFilter} />
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      <ContactList
-        contacts={filteredContacts}
-        onDeleteItem={handleDeleteContact}
-      />
-
-      <Navigation>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </Navigation>
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <p>
+          Error: {error}.{' '}
+          <button onClick={() => dispatch(fetchContacts())}>Reload</button>
+        </p>
+      ) : (
+        <ContactList
+          contacts={filteredContacts}
+          onDeleteItem={handleDeleteContact}
+        />
+      )}
+      <Navigation />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
     </div>
   );
 }

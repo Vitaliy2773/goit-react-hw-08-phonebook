@@ -3,38 +3,36 @@ import { instance } from 'auth/auth.reducer';
 
 export const fetchContactsThunk = createAsyncThunk(
   'contacts/getAll',
-  async (_, thunkApi) => {
+  async (_, { rejectWithValue }) => {
     try {
       const { data } = await instance.get('/contacts');
-
       return data;
     } catch (err) {
-      return thunkApi.rejectWithValue(err.message);
+      return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
 );
 
-export const addContacThunk = createAsyncThunk(
+export const addContactThunk = createAsyncThunk(
   'contacts/add',
-  async (formData, thunkApi) => {
+  async (formData, { rejectWithValue }) => {
     try {
       const { data } = await instance.post('/contacts', formData);
-
       return data;
     } catch (err) {
-      return thunkApi.rejectWithValue(err.message);
+      return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
 );
 
 export const deleteContactThunk = createAsyncThunk(
   'contacts/delete',
-  async (contactId, thunkApi) => {
+  async (contactId, { rejectWithValue }) => {
     try {
-      const { data } = await instance.delete(`/contacts/${contactId}`);
-      return data;
+      await instance.delete(`/contacts/${contactId}`);
+      return contactId;
     } catch (err) {
-      return thunkApi.rejectWithValue(err.message);
+      return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
 );
@@ -48,26 +46,26 @@ const initialState = {
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
-  extraReducers: builder =>
+  extraReducers: builder => {
     builder
       .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.contacts = payload;
       })
-      .addCase(addContacThunk.fulfilled, (state, { payload }) => {
+      .addCase(addContactThunk.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.contacts = [...state.contacts, payload];
       })
-      .addCase(deleteContactThunk.fulfilled, (state, { payload }) => {
+      .addCase(deleteContactThunk.fulfilled, (state, action) => {
         state.isLoading = false;
         state.contacts = state.contacts.filter(
-          contact => contact.id !== payload.id
+          contact => contact.id !== action.payload
         );
       })
       .addMatcher(
         isAnyOf(
           fetchContactsThunk.pending,
-          addContacThunk.pending,
+          addContactThunk.pending,
           deleteContactThunk.pending
         ),
         state => {
@@ -78,14 +76,15 @@ const contactsSlice = createSlice({
       .addMatcher(
         isAnyOf(
           fetchContactsThunk.rejected,
-          addContacThunk.rejected,
+          addContactThunk.rejected,
           deleteContactThunk.rejected
         ),
         (state, { payload }) => {
           state.isLoading = false;
           state.error = payload;
         }
-      ),
+      );
+  },
 });
 
 export const contactsReducer = contactsSlice.reducer;
