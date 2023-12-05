@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import UserMenu from 'components/userMenu/UserMenu';
 import { selectAuthenticated } from 'auth/auth.selectors';
 
 const Navigation = () => {
@@ -23,6 +24,7 @@ const Navigation = () => {
             <NavLink to="/contacts">Contacts</NavLink>
           </li>
         )}
+        <UserMenu />
       </ul>
     </nav>
   );

@@ -6,8 +6,10 @@ export const fetchContactsThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await instance.get('/contacts');
+      console.log('Fetched contacts:', data);
       return data;
     } catch (err) {
+      console.error('Error fetching contacts:', err);
       return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
@@ -18,8 +20,10 @@ export const addContactThunk = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const { data } = await instance.post('/contacts', formData);
+      console.log('Added contact:', data);
       return data;
     } catch (err) {
+      console.error('Error adding contact:', err);
       return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
@@ -30,8 +34,10 @@ export const deleteContactThunk = createAsyncThunk(
   async (contactId, { rejectWithValue }) => {
     try {
       await instance.delete(`/contacts/${contactId}`);
+      console.log('Deleted contact ID:', contactId);
       return contactId;
     } catch (err) {
+      console.error('Error deleting contact:', err);
       return rejectWithValue(err.response ? err.response.data : err.message);
     }
   }
@@ -49,10 +55,12 @@ const contactsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
+        console.log('Contacts fetch successful', payload);
         state.isLoading = false;
         state.contacts = payload;
       })
       .addCase(addContactThunk.fulfilled, (state, { payload }) => {
+        console.log(payload);
         state.isLoading = false;
         state.contacts = [...state.contacts, payload];
       })
