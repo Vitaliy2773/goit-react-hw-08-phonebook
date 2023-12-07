@@ -1,20 +1,24 @@
 import React from 'react';
+import { List, ListItem } from '@chakra-ui/react';
 import ContactItem from 'components/contactItem/ContactItem';
-import css from '../Contacts.module.css';
 
 export default function ContactList({ contacts, onDeleteItem }) {
   if (!contacts || contacts.length === 0) {
     return <p>Немає контактів</p>;
   }
+
   return (
-    <ul className={css.contactsList}>
+    <List spacing={4} boxShadow="md" p={4} borderRadius="lg">
       {contacts.map(contact => (
-        <ContactItem
+        <ListItem
           key={contact.id}
-          contact={contact}
-          onDeleteItem={onDeleteItem}
-        />
+          d="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <ContactItem contact={contact} onDeleteItem={onDeleteItem} />
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 }

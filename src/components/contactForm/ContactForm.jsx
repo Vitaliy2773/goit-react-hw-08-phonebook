@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
-import css from '../Contacts.module.css';
+import { FormControl, FormLabel, Input, Button, Box } from '@chakra-ui/react';
 
 export default function ContactForm({ onSubmit }) {
   const [contact, setContact] = useState({ name: '', number: '' });
 
-  function handleChange(e) {
+  const handleChange = e => {
     const { name, value } = e.target;
     setContact(prev => ({ ...prev, [name]: value }));
-  }
+  };
 
-  function handleSubmit(e) {
+  const handleSubmit = e => {
     e.preventDefault();
     onSubmit(contact);
     setContact({ name: '', number: '' });
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className={css.form}>
-      <label>
-        Name
-        <input
-          type="text"
-          name="name"
-          onChange={handleChange}
-          value={contact.name}
-          className={css.input}
-          required
-        />
-      </label>
-      <label>
-        Number
-        <input
-          type="tel"
-          name="number"
-          onChange={handleChange}
-          value={contact.number}
-          className={css.input}
-          required
-        />
-      </label>
-      <button type="submit" className={css.buttonAddContact}>
-        Add contact
-      </button>
-    </form>
+    <Box width="30%" margin="0 auto">
+      <form onSubmit={handleSubmit}>
+        <FormControl p={4} borderRadius="lg" boxShadow="md">
+          <FormLabel htmlFor="name">Name</FormLabel>
+          <Input
+            id="name"
+            type="text"
+            name="name"
+            value={contact.name}
+            onChange={handleChange}
+            required
+          />
+          <FormLabel htmlFor="number">Number</FormLabel>
+          <Input
+            id="number"
+            type="tel"
+            name="number"
+            value={contact.number}
+            onChange={handleChange}
+            required
+          />
+          <Button mt={4} colorScheme="blue" type="submit">
+            Add Contact
+          </Button>
+        </FormControl>
+      </form>
+    </Box>
   );
 }

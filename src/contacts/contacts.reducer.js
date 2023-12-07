@@ -7,6 +7,7 @@ export const fetchContactsThunk = createAsyncThunk(
     try {
       const { data } = await instance.get('/contacts');
       console.log('Fetched contacts:', data);
+
       return data;
     } catch (err) {
       console.error('Error fetching contacts:', err);

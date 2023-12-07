@@ -1,18 +1,23 @@
 import React from 'react';
-import css from '../Contacts.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilter } from 'components/contactsSlice/contactsSlice';
+import { Input, Box } from '@chakra-ui/react';
 
-export default function Filter({ value, onChange }) {
+export default function Filter() {
+  const dispatch = useDispatch();
+  const filterValue = useSelector(state => state.contacts.filter);
+
+  const handleChange = e => {
+    dispatch(setFilter(e.target.value));
+  };
+
   return (
-    <label className={css.label}>
-      Find contacts by name
-      <input
-        type="text"
-        name="filter"
-        aria-label="Search contacts"
-        onChange={onChange}
-        value={value}
-        className={css.input}
+    <Box p={4} borderRadius="lg" boxShadow="md" width="30%" margin="0 auto">
+      <Input
+        placeholder="Search contacts"
+        onChange={handleChange}
+        value={filterValue}
       />
-    </label>
+    </Box>
   );
 }

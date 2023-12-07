@@ -6,8 +6,10 @@ export const fetchContacts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await instance.get('/contacts');
+      console.log('Fetched contacts:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Error fetching contacts:', error);
       return rejectWithValue(
         error.response ? error.response.data : error.message
       );

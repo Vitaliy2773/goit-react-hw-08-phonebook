@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Heading, Text, Box, Center, VStack } from '@chakra-ui/react';
 import {
   fetchContacts,
   deleteContact,
@@ -12,7 +13,10 @@ import Loader from 'components/Loader/Loader';
 
 const ContactsPage = () => {
   const dispatch = useDispatch();
-  const { contacts, isLoading, error } = useSelector(state => state.contacts);
+  const contacts = useSelector(state => state.contacts.items);
+  const filter = useSelector(state => state.contacts.filter);
+  const isLoading = useSelector(state => state.contacts.isLoading);
+  const error = useSelector(state => state.contacts.error);
 
   useEffect(() => {
     dispatch(fetchContacts());
@@ -26,24 +30,48 @@ const ContactsPage = () => {
     dispatch(deleteContact(contactId));
   };
 
+  const filteredContacts = contacts.filter(
+    contact =>
+      typeof contact.name === 'string' &&
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   if (isLoading) {
     return <Loader />;
   }
 
   if (error) {
-    return <p>Помилка завантаження контактів: {error}</p>;
+    return (
+      <Center mt={6}>
+        <Text fontSize="xl" color="red.500">
+          Помилка завантаження контактів: {error}
+        </Text>
+      </Center>
+    );
   }
 
   return (
-    <div>
-      <h1>Контакти</h1>
-      <ContactForm onSubmit={handleAddContact} />
-      <Filter />
-      <ContactList
-        contacts={Array.isArray(contacts) ? contacts : []}
-        onDeleteItem={handleDeleteContact}
-      />
-    </div>
+    <Box px={4} py={6} maxWidth="1500px" margin="auto">
+      <VStack spacing={6} align="stretch">
+        <Center>
+          <Heading as="h1" size="xl">
+            Контакти
+          </Heading>
+        </Center>
+        <ContactForm onSubmit={handleAddContact} />
+        <Filter />
+        {contacts.length === 0 ? (
+          <Text fontSize="2xl" color="gray.600" textAlign="center" mt={4}>
+            Немає контактів
+          </Text>
+        ) : (
+          <ContactList
+            contacts={filteredContacts}
+            onDeleteItem={handleDeleteContact}
+          />
+        )}
+      </VStack>
+    </Box>
   );
 };
 
