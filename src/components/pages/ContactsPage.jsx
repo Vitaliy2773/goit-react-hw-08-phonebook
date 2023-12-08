@@ -1,33 +1,39 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Heading, Text, Box, Center, VStack } from '@chakra-ui/react';
 import {
-  fetchContacts,
-  deleteContact,
-  addContact,
-} from 'components/contactsSlice/contactsSlice';
+  fetchContactsThunk,
+  addContactThunk,
+  deleteContactThunk,
+} from 'contacts/contacts.reducer';
+import {
+  selectContacts,
+  selectContactsIsLoading,
+  selectContactsError,
+  selectContactsFilter,
+} from 'contacts/contacts.selectors';
 import ContactForm from 'components/contactForm/ContactForm';
 import ContactList from 'components/contactList/ContactList';
 import Filter from 'components/filter/Filter';
 import Loader from 'components/Loader/Loader';
+import { Heading, Text } from '@chakra-ui/react';
 
 const ContactsPage = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.contacts.filter);
-  const isLoading = useSelector(state => state.contacts.isLoading);
-  const error = useSelector(state => state.contacts.error);
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectContactsIsLoading);
+  const error = useSelector(selectContactsError);
+  const filter = useSelector(selectContactsFilter) || '';
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(fetchContactsThunk());
   }, [dispatch]);
 
   const handleAddContact = newContact => {
-    dispatch(addContact(newContact));
+    dispatch(addContactThunk(newContact));
   };
 
   const handleDeleteContact = contactId => {
-    dispatch(deleteContact(contactId));
+    dispatch(deleteContactThunk(contactId));
   };
 
   const filteredContacts = contacts.filter(
@@ -40,38 +46,23 @@ const ContactsPage = () => {
     return <Loader />;
   }
 
-  if (error) {
-    return (
-      <Center mt={6}>
-        <Text fontSize="xl" color="red.500">
-          Помилка завантаження контактів: {error}
-        </Text>
-      </Center>
-    );
-  }
-
   return (
-    <Box px={4} py={6} maxWidth="1500px" margin="auto">
-      <VStack spacing={6} align="stretch">
-        <Center>
-          <Heading as="h1" size="xl">
-            Контакти
-          </Heading>
-        </Center>
-        <ContactForm onSubmit={handleAddContact} />
-        <Filter />
-        {contacts.length === 0 ? (
-          <Text fontSize="2xl" color="gray.600" textAlign="center" mt={4}>
-            Немає контактів
-          </Text>
-        ) : (
-          <ContactList
-            contacts={filteredContacts}
-            onDeleteItem={handleDeleteContact}
-          />
-        )}
-      </VStack>
-    </Box>
+    <div>
+      <Heading as="h1" size="xl" mb={4} textAlign="center">
+        Contacts
+      </Heading>
+      {error && (
+        <Text color="red.500" mb={4}>
+          Error loading contacts: {error}
+        </Text>
+      )}
+      <ContactForm onSubmit={handleAddContact} />
+      <Filter />
+      <ContactList
+        contacts={filteredContacts}
+        onDeleteItem={handleDeleteContact}
+      />
+    </div>
   );
 };
 

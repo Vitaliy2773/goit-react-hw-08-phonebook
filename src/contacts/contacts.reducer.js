@@ -6,8 +6,6 @@ export const fetchContactsThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await instance.get('/contacts');
-      console.log('Fetched contacts:', data);
-
       return data;
     } catch (err) {
       console.error('Error fetching contacts:', err);
@@ -21,7 +19,6 @@ export const addContactThunk = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const { data } = await instance.post('/contacts', formData);
-      console.log('Added contact:', data);
       return data;
     } catch (err) {
       console.error('Error adding contact:', err);
@@ -35,7 +32,6 @@ export const deleteContactThunk = createAsyncThunk(
   async (contactId, { rejectWithValue }) => {
     try {
       await instance.delete(`/contacts/${contactId}`);
-      console.log('Deleted contact ID:', contactId);
       return contactId;
     } catch (err) {
       console.error('Error deleting contact:', err);
@@ -48,20 +44,24 @@ const initialState = {
   contacts: [],
   isLoading: false,
   error: null,
+  filter: '',
 };
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
+  reducers: {
+    setFilter: (state, action) => {
+      state.filter = action.payload;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
-        console.log('Contacts fetch successful', payload);
         state.isLoading = false;
         state.contacts = payload;
       })
       .addCase(addContactThunk.fulfilled, (state, { payload }) => {
-        console.log(payload);
         state.isLoading = false;
         state.contacts = [...state.contacts, payload];
       })
@@ -96,4 +96,5 @@ const contactsSlice = createSlice({
   },
 });
 
+export const { setFilter } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;

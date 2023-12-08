@@ -1,10 +1,16 @@
 import React from 'react';
-import { List, ListItem } from '@chakra-ui/react';
+import { List, ListItem, Text, Center } from '@chakra-ui/react';
 import ContactItem from 'components/contactItem/ContactItem';
 
 export default function ContactList({ contacts, onDeleteItem }) {
   if (!contacts || contacts.length === 0) {
-    return <p>Немає контактів</p>;
+    return (
+      <Center>
+        <Text fontSize="xl" color="gray.600" my={4}>
+          No contacts
+        </Text>
+      </Center>
+    );
   }
 
   return (

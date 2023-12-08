@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFilter } from 'components/contactsSlice/contactsSlice';
+import { setFilter } from 'contacts/contacts.reducer';
 import { Input, Box } from '@chakra-ui/react';
 
 export default function Filter() {
   const dispatch = useDispatch();
-  const filterValue = useSelector(state => state.contacts.filter);
+  const filterValue = useSelector(state => state.contacts.filter) || '';
 
   const handleChange = e => {
     dispatch(setFilter(e.target.value));
