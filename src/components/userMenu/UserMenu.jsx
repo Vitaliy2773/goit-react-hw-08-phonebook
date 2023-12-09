@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logOutThunk } from 'auth/auth.reducer';
@@ -9,14 +9,17 @@ const UserMenu = () => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectAuthenticated);
   const userData = useSelector(selectUserData);
+  const [hasLoggedOut, setHasLoggedOut] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && hasLoggedOut) {
       navigate('/login');
+      setHasLoggedOut(false);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, hasLoggedOut, navigate]);
 
   const handleLogout = () => {
+    setHasLoggedOut(true);
     dispatch(logOutThunk());
   };
 
