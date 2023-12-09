@@ -1,10 +1,20 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { logOutThunk } from 'auth/auth.reducer';
+import { selectAuthenticated, selectUserData } from 'auth/auth.selectors';
 
 const UserMenu = () => {
   const dispatch = useDispatch();
-  const userData = useSelector(state => state.auth.userData);
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectAuthenticated);
+  const userData = useSelector(selectUserData);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     dispatch(logOutThunk());

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { loginThunk } from 'auth/auth.reducer';
+import { selectAuthenticated } from 'auth/auth.selectors';
 import {
   FormControl,
   FormLabel,
@@ -12,8 +14,16 @@ import {
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectAuthenticated);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/contacts');
+    }
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = e => {
     e.preventDefault();

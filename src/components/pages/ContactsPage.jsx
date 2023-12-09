@@ -53,7 +53,7 @@ const ContactsPage = () => {
       </Heading>
       {error && (
         <Text color="red.500" mb={4}>
-          Error loading contacts: {error}
+          Error loading contacts: {error.message || error.toString()}
         </Text>
       )}
       <ContactForm onSubmit={handleAddContact} />
