@@ -1,12 +1,18 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Flex, Link } from '@chakra-ui/react';
 import UserMenu from 'components/userMenu/UserMenu';
 import { selectAuthenticated } from 'auth/auth.selectors';
+import { refreshThunk } from 'auth/auth.reducer';
 
 const Navigation = () => {
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectAuthenticated);
+
+  useEffect(() => {
+    dispatch(refreshThunk());
+  }, [dispatch]);
 
   return (
     <Flex
